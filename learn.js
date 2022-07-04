@@ -1622,3 +1622,209 @@ let clone = Object.defineProperties({}, Object.getOwnPropertyDescriptors(obj));
 for (let key in user) {
   clone[key] = user[key];
 }
+
+
+
+//Дублирование объектов 
+function anotherFunction() {
+  /*..*/
+}
+let anotherObject = {
+  c: true,
+};
+let anotherArray = [];
+let myObject3 = {
+  a: 2,
+  b: anotherObject, // ссылка, а не копия!
+  c: anotherArray, // еще одна ссылка!
+  d: anotherFunction,
+};
+anotherArray.push(anotherObject, myObject3);
+
+
+//В то же время, поверхностное копирование достаточно понятно и имеет меньше проблем, поэтому в ES6 для этой задачи есть Object.assign(..)
+let newObj = Object.assign({}, myObject);
+newObj.a; // 2
+newObj.b === anotherObject; // true
+newObj.c === anotherArray; // true
+newObj.d === anotherFunction; // true
+// Как бы то ни было, дублирование, которое имеет место в Object.assign(..) это чистое присваивание в стиле =, так что любые особенные характеристики свойств (вроде writable) исходного объекта не сохраняются в целевом объекте.
+
+
+//Геттеры и Сеттеры    [[Put]] и [[Get]]
+
+let myObject4 = {
+  //определяем геттер для а
+  get a() {
+    return 2;
+  },
+};
+
+Object.defineProperty(
+  myObject4, //цель
+  "b", //имя свойства
+  {
+    //дескриптор
+    //определяем геттер для b
+    get: function () {
+      return this.a * 2;
+    },
+    //удедимся что b будет отображаться как свойства объекта
+    enumerable: true,
+  }
+);
+myObject4.a; //2
+myObject4.b; //4
+
+/////////////////////
+
+let myObject8 = {
+    // определяем геттер для `a`
+    get a() {
+        return 4;
+    }
+};
+myObject8.a = 3;
+myObject8.a; // 4
+
+///////////////////////////////////////
+let myObject5 = {
+    //
+    get a() {
+        return this._a_;
+    },
+    //
+    set a(val) {
+        this._a_ = val * 2;
+    }
+};
+myObject5.a = 2;//2
+myObject5.a;//4
+//////////////////////////////////
+
+//Существование
+let myObject7 = {
+    a: 2
+};
+("a" in myObject);	            // true 
+//проверит находится ли свойство в объекте или существует ли оно уровнем выше в цепочке [[Prototype]] объекта
+("b" in myObject);	            // false
+myObject.hasOwnProperty("a");	// true
+//наоборот проверяет есть ли свойство только у объекта myObject или нет и не опрашивает цепочку [[Prototype]]
+myObject.hasOwnProperty("b");	// false
+
+//При таком сценарии более надежным способом выполнить подобную проверку будет который заимствует базовый метод hasOwnProperty и использует явную привязку this , чтобы применить его к нашему myObject
+Object.prototype.hasOwnProperty.call(myObject7, "a");//true
+
+
+//перечисление 
+
+let myObject9 = {};
+Object.defineProperty(
+  myObject9,
+  "a",
+  //сделаем `a` перечисляемым, как обычно
+  { enumerable: true, value: 2 }
+);
+Object.defineProperty(
+  myObject9,
+  "b",
+  //сделаем `b` неперечисляемым
+  { enumerable: false, value: 3 }
+);
+
+myObject9.b;
+"b" in myObject9;
+myObject9.hasOwnProperty("b");
+//
+// for (var k in myObject9) {
+//   console.log(k, myObject9[k]);// a 2
+// }
+myObject9.propertyIsEnumerable("a"); // true
+myObject9.propertyIsEnumerable("b"); // false
+Object.keys(myObject9); // ["a"]
+Object.getOwnPropertyNames(myObject9); // ["a", "b"]
+// //propertyIsEnumerable(..) проверяет существует ли данное имя свойства непосредственно в объекте и установлено ли enumerable:true.
+// Object.keys(..) возвращает массив всех перечисляемых свойств, в то время как Object.getOwnPropertyNames(..) возвращает массив всех свойств -- перечисляемых или нет.
+// Отличия in от hasOwnProperty(..) в том, опрашивают ли они цепочку [[Prototype]] или нет. В то время как Object.keys(..) и Object.getOwnPropertyNames(..) проверяют только конкретный указанный объект.
+
+
+/////////////////////////
+//Итерация
+//перебор индексов, где вы используете индекс для получения значения, наподобие myArray[i].
+let myArray2 = [1, 2, 3];
+for (let i = 0; i < myArray2.length; i++){
+    console.log(myArray2[i]);
+}
+//1 2 3
+/////////////
+// ES6 добавляет синтаксис цикла for..of для перебора массивов (и объектов, если объект определяет свой собственный итератор).
+let myArray3 = [1, 2, 3];
+for (let v of myArray3) {
+    console.log(v)//1 2 3
+}
+//Цикл for..of запрашивает объект-итератор (из стандартной встроенной функции, на языке спецификации известной как @@iterator) у перебираемой сущности, а затем перебирает возвращаемые значения, вызывая метод next() объекта-итератора для каждой итерации цикла.
+
+//////////////////////////////////////
+let myArray4 = [ 1, 2, 3 ];
+let it = myArray4[Symbol.iterator]();
+it.next(); // { value:1, done:false }
+it.next(); // { value:2, done:false }
+it.next(); // { value:3, done:false }
+it.next(); // { done:true }
+
+//Для перебора любого объекта можно определить свой собственный стандартный @@iterator. Например:
+
+let myObject10 = {
+    a: 2,
+    b: 3
+};
+
+Object.defineProperty(myObject10, Symbol.iterator, {
+    enumerable: false,
+    writable: false,
+    configurable: true,
+    value: function () {
+        let o = this;
+        let idx = 0;
+        let ks = Object.keys(o);
+        return {
+            next: function () {
+                return {
+                    value: o[ks[idx++]],
+                    done: (idx > ks.length)
+                };
+            }
+        };
+    }
+});
+//перебираем myObject10 вручную 
+let it2 = myObject10[Symbol.iterator]();
+it.next(); // { value:2, done:false }
+it.next(); // { value:3, done:false }
+it.next(); // { value:undefined, done:true }
+// перебираем `myObject` с помощью `for..of`
+for (let v of myObject10) {
+    console.log( v );
+}
+// 2
+// 3
+
+
+//Этот итератор будет генерировать случайные числа «вечно»//Ограничен break до 10
+let randoms2 = {
+  [Symbol.iterator]: function () {
+    return {
+      next: function () {
+        return { value: Math.random() };
+      },
+    };
+  },
+};
+let randoms_pool = [];
+for (let n of randoms2) {
+  randoms_pool.push(n);
+  // не продолжаем бесконечно!
+  if (randoms_pool.length === 10) break;
+}
+////////////////////////////////////
