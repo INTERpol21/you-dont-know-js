@@ -1259,11 +1259,7 @@ let fty2 = CoolModule2("fty2");
 fty1.identify();//fty1
 fty2.identify();//fty2
 
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 let fyi = (function CoolModule3(id) {
   function change() {
     // modifying the public API
@@ -1287,11 +1283,7 @@ let fyi = (function CoolModule3(id) {
 fyi.identify(); //fyi module
 fyi.change();
 fyi.identify(); //FYI MODULE
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 let obj4 = {
   count: 0,
   cool: function coolFn() {
@@ -1325,11 +1317,7 @@ let obj5 = {
 obj5.cool(); // еще красивее
 
 
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 //This и Прототипы Объектов
 
 function identify3() {
@@ -1355,11 +1343,7 @@ speak.call(me);// Hello, I'm KYLE
 speak.call(you);// Hello, I'm READER
 
 
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-////
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 
 function foo(num) {
 	console.log( "foo: " + num );
@@ -1386,11 +1370,7 @@ for (iw=0; iw<10; iw++) {
 console.log(foo.count); // 4
 
 
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 //Ничего кроме правил
 //Привязка по умолчанию не иммет смысла в strict mode
 function foo33() {
@@ -1414,11 +1394,7 @@ var aw4 = 2;
   foo(); //undefined 
 })();
 
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 // глобальная привязка объектов JavaScript (Работает в консоле браузера )
 let sayName = function (name) {
   console.log(this.name);
@@ -1427,11 +1403,7 @@ let sayName = function (name) {
 window.name = "Tapas";
 sayName();
 
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 //Неявная привязка
 
 let blog = {
@@ -1443,11 +1415,7 @@ let blog = {
 };
 
 blog.message();
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-//
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 let dog = {
   breed: 'Beagles',
   lovesToChase: 'rabbits'
@@ -1463,11 +1431,7 @@ dog.foo(); // в консоль попадёт Beagles loves chasing rabbits.
 // chase(); //так эту функцию лучше не вызывать
 
 
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 //Только верхний/последний уровень ссылки на свойство объекта в цепочке имеет значение для точки вызова. Например:
 function foo21() {
 	console.log( this.a );
@@ -1487,11 +1451,7 @@ obj1.obj2.foo21(); // 42
 
 
 
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 //Явная привязка
 //call
 function foo() {
@@ -1503,18 +1463,13 @@ let obj = {
 };
 
 foo.call(obj); // 2
-<<<<<<< HEAD
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-//
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 //Такая привязка одновременно явная и сильная, поэтому мы называем ее жесткой привязкой.
 function foo(something) {
 	console.log( this.a, something );//2 3 
 	return this.a + something;
 }
 
-<<<<<<< HEAD
 let obj = {
 	a: 2
 };
@@ -1524,17 +1479,6 @@ let bar = function() {
 };
 
 let b = bar( 3 ); // 2 3
-=======
-var obj = {
-	a: 2
-};
-
-var bar = function() {
-	return foo.apply( obj, arguments );
-};
-
-var b = bar( 3 ); // 2 3
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 console.log( b ); // 5
 //
 let getName = function () {
@@ -1552,11 +1496,7 @@ getName.call(user);//Tapas
 let getName2 = function (hobby1, hobby2) {
   console.log(this.name + " likes " + hobby1 + "," + hobby2); //Tapas likes Swimming,Blogging
 }
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 let user2 = {
     name: 'Tapas',
     address: 'Omsk'
@@ -1572,11 +1512,7 @@ getName2.apply(user2, hobby);//Tapas likes Swimming,Blogging
 let newFn = getName2.bind(user, hobby[0], hobby[1]);//вызываем новую функцию для вызова 
 
 newFn();//Tapas likes Swimming,Blogging
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 //new привязка JavaScript
 
 let Cartoon = function (name, character) {
@@ -1592,11 +1528,7 @@ let Cartoon = function (name, character) {
 let jerry = new Cartoon("Jerry", "Mouse");
  
 
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 // Функция-конструктор
 let Friend = function(name, password, interests, job){
   this.fullName = name;
@@ -1625,11 +1557,7 @@ console.log( john.greeting() ); //Hi, my name is John Smith and I'm a teacher. L
 // console.log( sayHello() ) ;
 
 
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 let strPrimitive = "I am a string";
 typeof strPrimitive; // "string"
 strPrimitive instanceof String; // false
@@ -1638,11 +1566,7 @@ typeof strObject; // "object"
 strObject instanceof String; // true
 // проверим подтип объекта
 Object.prototype.toString.call(strObject); // [object String]
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 //«доступ к свойству».
 let prefix = "foo";
 let myObject = {
@@ -1651,21 +1575,13 @@ let myObject = {
 };
 myObject["foobar"]; // hello
 myObject["foobaz"]; // world
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 //array
 var myArray = ["foo", 42, "bar"];
 myArray.baz = "baz";
 myArray.length; // 3
 myArray.baz; // "baz"
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 //Флаги и дескрипторы свойств
 let myObject2 = {
   a: 2,
@@ -1673,11 +1589,7 @@ let myObject2 = {
 //Метод Object.getOwnPropertyDescriptor позволяет получить полную информацию о свойстве.
 Object.getOwnPropertyDescriptor(myObject2, "a"); //{ value: 2, writable: true, enumerable: true, configurable: true }
 //Чтобы изменить флаги, мы можем использовать метод Object.defineProperty.
-<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-=======
-
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
 let users = {};
 
 Object.defineProperty(users, "name", {
@@ -1710,7 +1622,6 @@ let clone = Object.defineProperties({}, Object.getOwnPropertyDescriptors(obj));
 for (let key in user) {
   clone[key] = user[key];
 }
-<<<<<<< HEAD
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2061,5 +1972,4 @@ class Rabbit2 extends Animal2 {
 
 let rabbit2 = new Rabbit2("Белый кролик"); 
 console.log(rabbit2.name);
-=======
->>>>>>> 444ab39b3e8be1c257608598a00940992820ab40
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
