@@ -2019,3 +2019,191 @@ console.log(article.title); // Сегодняшний дайджест
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//Примеси mixin
+
+let sayHiMixin = {
+    sayHi() {
+      console.log(`Привет, ${this.name}`); // Привет, Вася!
+    },
+    sayBye() {
+        console.log(`Пока, ${this.name}`);
+    }
+};
+
+//использование 
+class User3 {
+    constructor(name) {
+        this.name = name;
+        
+    }
+}
+
+//копируем методы
+//Object.assign() используется для копирования значений всех собственных перечисляемых свойств из одного или более исходных объектов в целевой объект. После копирования он возвращает целевой объект.
+//Object.assign(target, ...sources) target (Целевой объект) sources (Исходные объекты)
+Object.assign(User3.prototype, sayHiMixin);
+
+//теперь user может сказать привет 
+new User3("Вася").sayHi();// Привет, Вася!
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Примеси могут наследовать друг друга. sayHiMixin наследует от sayMixin:
+
+let sayMixin = {
+    say(phrase) {
+        console.log(phrase);//привет Петя
+    }
+};
+
+let sayHiMixin2 = {
+    __proto__: sayMixin,
+    sayHi() {
+      // вызываем метод родителя
+      super.say(`Привет, ${this.name}`);
+    },
+    sayBye() {
+      // вызываем метод родителя
+      super.say(`Пока,${this.name}`);
+    }
+};
+
+class User4 {
+    constructor(name) {
+        this.name = name;
+    }
+}
+
+// копируем методы
+Object.assign(User4.prototype, sayHiMixin2);
+
+// теперь User может сказать Привет
+new User4("Петя").sayHi(); // Привет, Вася!
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+let eventMixin = {
+  /**
+   * Подписаться на событие, использование:
+   * menu.on('select', function(item) { ... }
+   */
+  on(eventName, handler) {
+    if (!this._eventHandlers) this._eventHandlers = {};
+    if (!this._eventHandlers[eventName]) {
+      this._eventHandlers[eventName] = [];
+    }
+    this._eventHandlers[eventName].push(handler);
+  },
+
+  /**
+   * Отменить подписку, использование:
+   * menu.off('select', handler)
+   */
+  off(eventName, handler) {
+    let handlers = this._eventHandlers && this._eventHandlers[eventName];
+    if (!handlers) return;
+    for (let i = 0; i < handlers.length; i++) {
+      if (handlers[i] === handler) {
+        handlers.splice(i--, 1);
+      }
+    }
+  },
+
+  /**
+   * Сгенерировать событие с указанным именем и данными
+   * this.trigger('select', data1, data2);
+   */
+  trigger(eventName, ...args) {
+    if (!this._eventHandlers || !this._eventHandlers[eventName]) {
+      return; // обработчиков для этого события нет
+    }
+
+    // вызовем обработчики
+    this._eventHandlers[eventName].forEach((handler) =>
+      handler.apply(this, args)
+    );
+  },
+};
+
+
+// Создадим класс
+class Menu {
+  choose(value) {
+    this.trigger("select", value);
+  }
+}
+// Добавим примесь с методами для событий
+Object.assign(Menu.prototype, eventMixin);
+
+let menu = new Menu();
+
+// Добавить обработчик, который будет вызван при событии "select":
+menu.on("select", value => console.log(`Выбранное значение: ${value}`));
+
+// Генерирует событие => обработчик выше запускается и выводит:
+menu.choose("123"); // Выбранное значение: 123
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Глава 5: Прототипы
+//F.prototype
+
+let anotherObject2 = {
+  a: 2,
+};
+
+// создаем объект, привязанный к `anotherObject`
+let myObject11 = Object.create(anotherObject2);
+
+console.log(myObject11.a);//2
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function Foo(name) {
+  this.name = name;
+}
+
+Foo.prototype.myName = function () {
+  return this.name;
+};
+
+let a4 = new Foo("a");
+let b4 = new Foo("b");
+
+a4.myName(); // "a"
+b4.myName(); // "b"
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+let animal = {
+    eats: true
+};
+
+function Rabbit3(name) {
+    this.name = name;
+}
+//Установка Rabbit.prototype = animal буквально говорит интерпретатору следующее: "При создании объекта через new Rabbit() запиши ему animal в [[Prototype]]
+Rabbit3.prototype = animal;
+
+let rabbit3 = new Rabbit3("White Rabbit");//  rabbit.__proto__ == animal
+
+console.log(rabbit3.eats);// true
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//По умолчанию "prototype" – объект с единственным свойством constructor, которое ссылается на функцию-конструктор.
+
+function Rabbit4() {}
+// по умолчанию:
+// Rabbit.prototype = { constructor: Rabbit }
+
+let rabbit4 = new Rabbit4(); // наследует от {constructor: Rabbit}
+
+console.log(rabbit4.constructor == Rabbit4); // true (свойство получено из прототипа)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//"(Прототипное) наследование"
