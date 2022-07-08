@@ -2207,3 +2207,195 @@ console.log(rabbit4.constructor == Rabbit4); // true (свойство полу�
 
 
 //"(Прототипное) наследование"
+function Foo44(name) {
+    this.name = name;
+}
+
+Foo44.prototype.myName = function () {
+  return this.name; // "a"
+};
+
+function Bar44(name, label) {
+    Foo44.call
+        (this, name);
+    this.label = label;
+}
+
+// здесь мы создаем `Bar.prototype`
+// связанный с `Foo.prototype`
+// пред-ES6
+// ВЫБРАСЫВАЕТ стандартный существующий `Bar.prototype`
+// Bar44.prototype = Object.create(Foo44.prototype);
+// ES6+
+// ИЗМЕНЯЕТ существующий `Bar.prototype`
+Object.setPrototypeOf(Bar44.prototype, Foo44.prototype);
+
+// Осторожно! Теперь `Bar.prototype.constructor` отсутствует,
+// и это придется "пофиксить" вручную,
+// если вы привыкли полагаться на подобные свойства!
+
+Bar44.prototype.myLabel = function () {
+  return this.label; // "obj a"
+};
+
+let a44 = new Bar44("a", "obj a");
+console.log(a44.myName());// "a"
+console.log(a44.myLabel());// "obj a"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Свойство [[Prototype]] является внутренним и скрытым, но есть много способов задать его.
+
+let animal33 = {
+    eats: true,
+    walk() {
+      console.log("Animal walk"); // Animal walk
+    }
+};
+let rabbit33 = {
+    jumps: true
+};
+
+let longEar = {
+  earLength: 10,
+  __proto__: rabbit33,
+};
+
+rabbit33.__proto__ = animal33;
+
+console.log(rabbit33.eats);// true
+console.log(rabbit33.jumps)// true
+rabbit33.walk();// Animal walk
+console.log(longEar.jumps);// true (из rabbit)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+let book = {
+    tur: true,
+    con() { }
+};
+
+let page ={
+    __proto__:book
+};
+
+page.con = function () {
+  console.log("Book-puk!!!"); //Book-puk!!!
+}
+
+page.con(); //Вызов находит метод непосредственно в объекте и выполняет его, не используя прототип
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Свойства-аксессоры (get и set) – исключение, так как запись в него обрабатывается функцией-сеттером. То есть, это, фактически, вызов функции.
+let user5 = {
+  name: "John",
+  surname: "Smith",
+
+  set fullName(value) {
+    [this.name, this.surname] = value.split(" ");
+  },
+
+  get fullName() {
+    return `${this.name} ${this.surname}`;
+  }
+};
+
+let admin = {
+  __proto__: user5,
+  isAdmin: true
+};
+
+console.log(admin.fullName); // John Smith (*)
+
+// срабатывает сеттер!
+admin.fullName = "Alice Cooper"; // (**)
+console.log(admin.name); // Alice
+console.log(admin.surname); // Cooper
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Значение «this»
+let animal44 = {
+    walk() {
+        if (!this.isSleeping) {
+            console.log(`Walk`);
+        }
+    },
+    
+    sleep() {
+        this.isSleeping = true;
+    }
+};
+
+let rabbit44 = {
+    name: "White Rabbit",
+    __proto__: animal44
+};
+
+//// модифицирует rabbit.isSleeping
+rabbit44.sleep();
+
+console.log(rabbit44.isSleeping);// true
+console.log(animal44.isSleeping);// undefined (нет такого свойства в прототипе). ((т.к функция не была вызвала animal44.sleep();))
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+let animal5 = {
+  eats: true,
+};
+
+let rabbit5 = {
+  jumps: true,
+  __proto__: animal5,
+};
+// Object.keys возвращает только собственные ключи
+console.log(Object.keys(rabbit5)); // jumps
+// for..in проходит и по своим, и по унаследованным ключам
+for (let prop2 in rabbit5) console.log(prop2); // jumps, затем eats
+
+//Если унаследованные свойства нам не нужны, то мы можем отфильтровать их при помощи встроенного метода obj.hasOwnProperty(key)
+for (let prop2 in rabbit5) {
+  let isOwn = rabbit5.hasOwnProperty(prop2); //возвращает true, если у obj есть собственное, не унаследованное, свойство
+
+  if (isOwn) {
+    console.log(`Our: ${prop2}`); // Our: jumps
+  } else {
+    console.log(`Inherited: ${prop2}`); // Inherited: eats
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//Object.prototype
+let obj = {};
+console.log(obj.__proto__ === Object.prototype); // true // краткая нотация obj = {} – это то же самое, что и obj = new Object()
+// obj.toString === obj.__proto__.toString === Object.prototype.toString
+
+//Array, Date, Function встроенные прототипы
+
+let arr = [1, 2, 3];
+
+// наследует ли от Array.prototype?
+console.log(arr.__proto__ === Array.prototype); // true
+
+// затем наследует ли от Object.prototype?
+console.log(arr.__proto__.__proto__ === Object.prototype); // true
+
+// и null на вершине иерархии
+console.log(arr.__proto__.__proto__.__proto__); // null
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///Свойство __proto__ считается устаревшим
+let animal6 = {
+  eats: true
+};
+
+// создаём новый объект с прототипом animal
+let rabbit6 = Object.create(animal6);
+
+console.log(rabbit6.eats); // true
+
+console.log(Object.getPrototypeOf(rabbit6) === animal6); // получаем прототип объекта rabbit// true
+
+Object.setPrototypeOf(rabbit6, {}); // заменяем прототип объекта rabbit на {}
