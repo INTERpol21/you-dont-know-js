@@ -2427,3 +2427,322 @@ foo112("bar", "baz"); // ["bar","baz","bam"]
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+//Перебираемые объекты
+//Symbol.iterator;
+
+let range = {
+    from: 1,
+    to: 5
+};
+
+//  [Symbol.iterator]() {
+//     this.current = this.from;
+//     return this;
+//   },
+// 1. вызов for..of сначала вызывает эту функцию
+range[Symbol.iterator] = function () {
+    // ...она возвращает объект итератора:
+
+    return {
+        // 2. Далее, for..of работает только с этим итератором, запрашивая у него новые значения
+        current: this.from,
+        last: this.to,
+      
+
+        // 3. next() вызывается на каждой итерации цикла for..of
+        next() {
+            // 4. он должен вернуть значение в виде объекта {done:.., value :...}
+            if (this.current <= this.last) {
+                return { done: false, value: this.current++ };
+            } else {
+                return { done: true };
+            }
+        }
+    };
+};
+
+// теперь работает!
+for (let num of range) {
+  console.log(num); // 1, затем 2, 3, 4, 5
+}
+
+
+
+let arr = Array.from(range);
+console.log(arr);//[ 1, 2, 3, 4, 5 ]
+//// возводим каждое число в квадрат
+let arr2 = Array.from(range, (num) => num * num);
+console.log(arr2);//[ 1, 4, 9, 16, 25 ]
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//Явный вызов итератора
+let str2 = "Hello";
+ // делает то же самое, что и
+// for (let char of str) alert(char);
+
+let iterator = str2[Symbol.iterator]();
+
+while (true) {
+    let result = iterator.next();
+    if (result.done) break;
+    console.log(result.value);    // выводит символы один за другим
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Array.from 
+let arrayLike = {
+    0: "Hello",
+    1: "World",
+    length: 2
+};
+
+let arr1 = Array.from(arrayLike);
+console.log(arr1.pop());// World (метод работает)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//Map и Set
+
+//Map – это коллекция ключ/значение, как и Object. Но основное отличие в том, что Map позволяет использовать ключи любого типа.
+
+let map = new Map();
+
+map.set("1", "str1");// строка в качестве ключа
+map.set(1, "num1");// цифра как ключ
+map.set(true, "bool1");// булево значение как ключ
+
+// Map сохраняет тип ключей, так что в этом случае сохранится 2 разных значения:
+console.log(map.get(1));// "num1"
+console.log(map.get("1"));//"str1";
+console.table(map);//Map { '1' => 'str1', 1 => 'num1', true => 'bool1' }
+console.log(map.size);// 3
+
+let josh = { name: "Josh" };
+
+let visitsCountMap = new Map();
+
+visitsCountMap.set(josh, 123);
+//Использование объектов в качестве ключей – одна из наиболее заметных и важных функций Map
+console.log(visitsCountMap.get(josh));//123
+console.log(josh);//{ name: "Josh" };
+
+//Каждый вызов map.set возвращает объект map, так что мы можем объединить вызовы в цепочку:
+map.set("1", "str1").set(1, "num1").set(true, "bool1");
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Перебор Map
+
+let recipeMap = new Map([
+    ["Огурец", 500],
+    ["Помидор", 350],
+    ["Лук", 50],
+]);
+
+//перебор по ключам (овощи)
+for (let vegetable of recipeMap.keys()) {
+    console.log(vegetable);//огурец Помидор Лук
+}
+// перебор по значениям (числа)
+for (let amount11 of recipeMap.values()) {
+    console.log(amount11);//500 350 50
+}
+// перебор по элементам в формате [ключ, значение]
+for (let entry of recipeMap) { // то же самое, что и recipeMap.entries()
+  console.log(entry); //[ 'Огурец', 500 ] [ 'Помидор', 350 ] [ 'Лук', 50 ]
+}
+
+// выполняем функцию для каждой пары (ключ, значение)
+recipeMap.forEach((value, key, map) => {
+  console.log(`${key}: ${value}`); // огурец: 500 и так далее
+})
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Object.entries: Map из Object
+
+let obj22 = {
+  name: "John",
+  age: 30
+};
+
+let map22 = new Map(Object.entries(obj22));
+
+console.log(map22.get("name")); // John
+ //Здесь Object.entries возвращает массив пар ключ-значение: [ ["name","John"], ["age", 30] ]. Это именно то, что нужно для создания Map.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ //Object.fromEntries: Object из Map Обратная операция предыдушей 
+ let map33 = new Map();
+map33.set('banana', 1);
+map33.set('orange', 2);
+map33.set('meat', 4);
+
+let obj33 = Object.fromEntries(map33); // убрать .entries() // создаём обычный объект (*)
+
+// готово!
+// obj = { banana: 1, orange: 2, meat: 4 }
+
+console.log(obj33.orange); // 2
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//Объект Set – это особый вид коллекции: «множество» значений (без ключей), где каждое значение может появляться только один раз.
+
+let set = new Set();
+
+let john = { name: "Josh" };
+let pete = { name: "Pete" };
+let mary = { name: "Mary" };
+
+// считаем гостей, некоторые приходят несколько раз
+set.add(john);
+set.add(pete);
+set.add(mary);
+set.add(john);
+set.add(mary);
+
+// set хранит только 3 уникальных значения
+console.log(set.size);//3
+
+for (let user of set) {
+  console.log(user.name); //Josh Pete Mary
+}
+
+//Перебор объекта Set(Такие же методы как и у Map)
+let set2 = new Set(["апельсин", "яблоко", "банан"]);
+
+for (let value of set2) alert(value);
+
+// то же самое с forEach:
+set2.forEach((value, valueAgain, set) => {
+  console.log(value);
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Деструктурирующее присваивание
+//Деструктуризация массива
+// у нас есть массив с именем и фамилией
+let arr3 = ["Ilyaq", "Kantor"]
+// деструктурирующее присваивание
+// записывает firstName=arr[0], surname=arr[1]
+let [firstName, surName] = arr3;
+
+console.log(firstName);// Ilya
+console.log(surName);// Kantor
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//«Деструктуризация» не означает «разрушение».
+// второй элемент не нужен
+//Пропускайте элементы, используя запятые
+let [firstName2,, title] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+//присвоен только 1 и 3 элемент остальные откидываются, так как 2 элемент пропускается через запятую, остальные не имеют переменных
+console.log(title); // Consul
+console.log(firstName2);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Работает с любым перебираемым объектом с правой стороны
+let [a222, b, c] = "abc";
+let [one, two, three] = new Set([1, 2, 3]);
+
+//Присваивайте чему угодно с левой стороны
+let user51 = {};
+[user51.name, user51.surname] = "Ilya Kantor".split(' ');
+
+console.log(user.name, user.surname); // Ilya Kantor
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Цикл с .entries()
+let user6 = {
+  name: "John",
+  age: 30,
+};
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// цикл по ключам и значениям
+for (let [key, value] of Object.entries(user6)) {
+  console.log(`${key}:${value}`); // name:John, затем age:30
+}
+
+//то же самое для map:
+let user7 = new Map();
+user7.set("name", "John");
+user7.set("age", "30");
+
+for (let [key, value] of user5) {
+  console.log(`${key}:${value}`); // name:John, затем age:30
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Остаточные параметры «…» Троеточие 
+
+let [name1, name2, ...rest] = ["Julius", "Caesar", "Consul", "of the Roman Republic"]; //Любая переменная за место rest. ГЛАВНОЕ ... в ее начале 
+
+console.log(name1); // Julius
+console.log(name2); // Caesar
+
+// Обратите внимание, что `rest` является массивом.
+console.log(rest[0]); // Consul
+console.log(rest[1]); // of the Roman Republic
+console.log(rest.length); // 2
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Деструктуризация объекта
+//let {var1, var2} = {var1:…, var2:…}
+
+let options = {
+  title2: "Menu",
+  width: 100,
+  height: 200
+};
+
+let {title2, width, height} = options;
+
+console.log(title2);  // Menu
+console.log(width);  // 100
+console.log(height); // 200
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///Если мы хотим присвоить свойство объекта переменной с другим названием, например, свойство options.width присвоить переменной w, то мы можем использовать двоеточие:
+
+let options2 = {
+  title3: "Menu",
+  width: 100,
+  height: 200
+};
+
+// { sourceProperty: targetVariable }
+let {width: w2, height: h, title3} = options;//Двоеточие показывает «что : куда идёт»
+
+// width -> w
+// height -> h
+// title -> title
+
+console.log(title3);  // Menu
+console.log(w2);      // 100
+console.log(h);      // 200
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///Умные параметры функций
+
+let options3 = {
+  title: "My menu",
+  items: ["Item1", "Item2"],
+};
+
+function showMenu({
+  title = "Untitled",
+  width: w = 100, // width присваиваем в w
+  height: h = 200, // height присваиваем в h
+  items: [item1, item2], // первый элемент items присваивается в item1, второй в item2
+}) {
+  console.log(`${title} ${w} ${h}`); // My Menu 100 200
+  console.log(item1); // Item1
+  console.log(item2); // Item2
+}
+
+showMenu(options3);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
