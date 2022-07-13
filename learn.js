@@ -2746,3 +2746,35 @@ function showMenu({
 showMenu(options3);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Формат JSON, метод toJSON
+
+let a22 = {
+  val: [1, 2, 3],
+  // Наверное, правильно.
+  toJSON: function () {
+    return this.val.slice(1);
+  },
+};
+let b22 = {
+  val: [1, 2, 3],
+  // Наверное, ошибка.
+  toJSON: function () {
+    return "[" + this.val.slice(1).join() + "]";
+  },
+};
+JSON.stringify(a22); // "[2,3]"
+JSON.stringify(b22); // ""[2,3]""
+
+
+var a23 = {
+ b: 42,
+ c: "42",
+ d: [1,2,3]
+};
+JSON.stringify( a23, ["b","c"] ); // "{"b":42,"c":"42"}"
+JSON.stringify( a23, function(k,v){
+ if (k !== "c") return v;
+} );
+// "{"b":42,"d":[1,2,3]}"
+
+
