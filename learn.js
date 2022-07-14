@@ -2765,8 +2765,8 @@ let b22 = {
 JSON.stringify(a22); // "[2,3]"
 JSON.stringify(b22); // ""[2,3]""
 
-
-var a23 = {
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+let a23 = {
  b: 42,
  c: "42",
  d: [1,2,3]
@@ -2777,4 +2777,106 @@ JSON.stringify( a23, function(k,v){
 } );
 // "{"b":42,"d":[1,2,3]}"
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+let student = {
+    name: "Josh",
+    age: 30,
+    isAdmin: false,
+    courses: ["html", "css", "js"],
+    wife:null
+};
+
+let json = JSON.stringify(student);
+console.log(typeof json);//string
+console.log(json);//{"name":"Josh","age":30,"isAdmin":false,"courses":["html","css","js"],"wife":null}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//replacer Массив свойств для кодирования или функция соответствия function(key, value)
+let room = {
+  number: 23,
+};
+
+let meetup = {
+  title: "Conference",
+  participants: [{ name: "John" }, { name: "Alice" }],
+  place: room, // meetup ссылается на room
+};
+
+room.occupiedBy = meetup; // room ссылается на meetup
+
+console.log(
+  //{"title":"Conference","participants":[{"name":"John"},{"name":"Alice"}],"place":{"number":23}}
+  JSON.stringify(meetup, ["title", "participants", "place", "name", "number"])
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+let room2 = {
+    number: 23
+};
+
+let meetup2 = {
+    title: "Conference",
+    participants: [{ name: "John" }, { name: "Alice" }],
+    place: room2  // meetup ссылается на room
+};
+
+room2.occupiedBy = meetup2; // room ссылается на meetup
+
+console.log(JSON.stringify(meetup2, function replacer(key, value) {
+  console.log(`${key}:${value}`);
+  // условие ? выражение1 : выражение2;
+  return (key == "occupiedBy") ? undefined : value;
+}));
+
+/* пары ключ:значение, которые приходят в replacer:
+:             [object Object]
+title:        Conference
+participants: [object Object],[object Object]
+0:            [object Object]
+name:         John
+1:            [object Object]
+name:         Alice
+place:        [object Object]
+number:       23
+occupiedBy: [object Object]
+*/
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Теперь давайте добавим собственную реализацию метода toJSON в наш объект room
+
+let room3 = {
+  number: 23,
+  toJSON() {
+    return this.number;
+  }
+};
+
+let meetup3 = {
+  title: "Conference",
+  room3
+};
+
+console.log(JSON.stringify(room3)); // 23
+
+console.log(JSON.stringify(meetup3));//{"title":"Conference","room3":23}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Использование reviver
+
+let schedule = `{
+  "meetups": [
+    {"title":"Conference","date":"2017-11-30T12:00:00.000Z"},
+    {"title":"Birthday","date":"2017-04-18T12:00:00.000Z"}
+  ]
+}`;
+
+schedule = JSON.parse(schedule, function(key, value) {
+  if (key == 'date') return new Date(value);
+  return value;
+});
+
+console.log(schedule.meetups[1].date.getDate()); // 18
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
