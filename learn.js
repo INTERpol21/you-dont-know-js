@@ -3283,5 +3283,3 @@ let dollabillsyall = (strings, ...values) =>
     }
     return s + v;
   }, "");
-
-
