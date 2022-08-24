@@ -18,6 +18,7 @@ console.log(total);
 
 let a = 20;
 
+
 a = a + 1;
 a *= 2;
 
@@ -3283,3 +3284,145 @@ let dollabillsyall = (strings, ...values) =>
     }
     return s + v;
   }, "");
+
+
+//////////////////////////////////////////////////////
+//Асинхронный код в JavaScript
+  //Промисы
+
+  let promise = new Promise(function (resolve, reject) {
+    ///......
+  });
+
+
+  let promise2 = new Promise(function (resolve, reject) {
+    resolve("done");
+
+    reject(new Error("…")); // игнорируется
+    setTimeout(() => resolve("…")); // игнорируется
+  });
+
+
+
+  // Запрос в компанию. Он синхронный
+// Компания обещает мне выполнить работу
+const angelMowersPromise = new Promise((resolve, reject) => {
+    // Обещание разрешилось спустя несколько часов
+    setTimeout(() => {
+        resolve('We finished mowing the lawn')
+    }, 100000) // разрешается спустя 100 000 мс
+    reject("We couldn't mow the lawn")
+})
+
+const myPaymentPromise = new Promise((resolve, reject) => {
+    // разрешившийся промис с объектом: платежом в 1000 евро
+    // и большое спасибо
+    setTimeout(() => {
+        resolve({
+            amount: 1000,
+            note: 'Thank You',
+        })
+    }, 100000)
+    // промис отклонен. 0 евро и отзыв «неудовлетворительно» 
+    reject({
+        amount: 0,
+        note: 'Sorry Lawn was not properly Mowed',
+    })
+})
+
+
+//////////////////////////////////////////////
+
+//ад обртаных вызовов или ад callback
+
+getDate(function (x) {
+  console.log(x);
+  getMoreData(x, function (y) {
+    console.log(y);
+    getSomeMoreData(y, function (z) {
+      console.log(z);
+    });
+  });
+});
+//////////////////////////////////////////////
+///Promise
+
+getData()
+  .then((x) => {
+    console.log(x);
+    return getMoreData(x);
+  })
+  .then((y) => {
+    console.log(y);
+    return getSomeMoreData(y);
+  })
+  .then((z) => {
+    console.log(z);
+  })
+
+//////////////////////////////////////////////
+
+const promise3 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve("Promise1 выполнен");
+  }, 2000);
+});
+const promise4 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve("Promise2 выполнен");
+  }, 1500);
+});
+//////////////////////////////////////////////
+//Promise.all(), который ждет успешное выполнение всех промисов, либо завершает свое выполнение при обнаружении первой неудачи в массиве промисов.
+Promise.all([promise3, promise4])
+  .then((data) => console.log(data[0], data[1]))
+  .catch((error) => console.log(error));
+
+//////////////////////////////////////////////
+//промисификация функции с колбека на промис
+// function calc(a, b, callback) {
+//   let sum = a + b;
+//   callback(sum);
+// }
+
+// calc(2, 2, (sum) => {
+//   let double = sum ** 2;
+//   console.log(double); // 16 -> (2 + 2)^2
+// });
+
+//////////////////////////////////////////////
+function calc(a, b) {
+  return new Promise(resolve => resolve(a + b));
+}
+
+calc(2, 2).then(sum => {
+    return sum ** 2;
+    
+}).then(console.log) // 16 -> (2 + 2)^2
+
+
+//////////////////////////////////////////////
+// Микрозадачи
+//Проходиться сначала по всех очереди, но выполняется сначала второй console.log, так как промисы попадают во внутрению очередь задач 
+let promise5 = Promise.resolve();
+
+promise.then(() => console.log("промис выполнен"));
+
+console.log("код выполнен"); // этот console.log показывается первым
+
+promise5.then(() => console.log("промис выполнен"));
+//////////////////////////////////////////////
+
+//Тут все вызывается по очереди 
+Promise.resolve()
+  .then(() => console.log("промис выполнен!"))
+  .then(() => console.log("код выполнен"));
+
+//////////////////////////////////////////////
+
+let promise6 = Promise.reject(new Error("Ошибка в промисе!"));
+
+setTimeout(() => promise6.catch(err => alert('поймана')), 1000);
+
+// Ошибка в промисе! Затем уже идет (поймана)
+window.addEventListener('unhandledrejection', event => alert(event.reason));
