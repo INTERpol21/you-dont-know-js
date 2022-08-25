@@ -3426,3 +3426,33 @@ setTimeout(() => promise6.catch(err => alert('поймана')), 1000);
 
 // Ошибка в промисе! Затем уже идет (поймана)
 window.addEventListener('unhandledrejection', event => alert(event.reason));
+
+///Async/await
+
+//У слова async один простой смысл: эта функция всегда возвращает промис
+async function f() {
+  return 1;
+}
+
+f().then(alert); // 1
+
+//идентично 
+async function f() {
+  return Promise.resolve(1);
+}
+
+f().then(alert); // 1
+
+
+/////////////////////////
+async function f() {
+  try {
+    let response = await fetch("/no-user-here");
+    let user = await response.json();
+  } catch (err) {
+    // перехватит любую ошибку в блоке try: и в fetch, и в response.json
+    alert(err);
+  }
+}
+
+f();
